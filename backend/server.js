@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const mysql = require("mysql2");
-const db = mysql.createConnection({
+const db = mysql.createPool({
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     user: process.env.DB_USER,
@@ -10,16 +10,14 @@ const db = mysql.createConnection({
     database: process.env.DB_NAME,
     ssl: {
         rejectUnauthorized: false
-    }
+    },
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+    enableKeepAlive: true,
+    keepAliveInitialDelay: 0
 });
-db.connect((err) => {
-    if (err) {
-        console.error("MySQL connection failed:", err.message);
-        return;
-    }
 
-    console.log("MySQL connected successfully!");
-});
 const app = express();
 
 app.use(cors());
